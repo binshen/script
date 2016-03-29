@@ -4,19 +4,19 @@ from pymongo import MongoClient
 logging.basicConfig(
     level=logging.WARN, 
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='import_restuarant_menus.log', 
+    filename='import_restaurant_menus.log', 
     filemode='w'
 )
 
 CLIENT_ID = 'YzIwMWRhMDI1NDAxNDBlNTUxYjdkNmEyOTYxNGVhNTBm'
 URL_MERCHANT_MENU = 'https://api.delivery.com/merchant/%s/menu?client_id=%s'
 
-mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
-db = mongoClient['consumer_db3']
-# mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468')
-# db = mongoClient['consumer_db']
+# mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
+# db = mongoClient['consumer_db3']
+mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
+db = mongoClient['consumer_db']
 
-restuarants = db.restuarants
+restaurants = db.restaurants
 dishes = db.dishes
 
 def send_request(url):
@@ -33,12 +33,12 @@ def send_request(url):
                 raise e
         break
 
-def import_restuarant_menu(restuarant_id, data, category):
+def import_restaurant_menu(restaurant_id, data, category):
     dish = {
         "category": [ category ],
         "name": data['name'],
         "price": data['price'],
-        "restaurantId": restuarant_id,
+        "restaurantId": restaurant_id,
         "listAdded": [],
         "images": data['images'],
         "videos": [],
@@ -48,8 +48,8 @@ def import_restuarant_menu(restuarant_id, data, category):
     }
     return dishes.insert_one(dish).inserted_id
 
-def parse_restuarant_menu(restuarant_id, data):
-    dishes.delete_many({ 'restaurantId': restuarant_id })
+def parse_restaurant_menu(restaurant_id, data):
+    dishes.delete_many({ 'restaurantId': restaurant_id })
     dishIds = []
     if 'menu' in data:
         menus = data['menu']
@@ -57,19 +57,19 @@ def parse_restuarant_menu(restuarant_id, data):
             if m1['type'] == 'menu':
                 for m2 in m1['children']:
                     if m2['type'] == 'item':
-                        dish_id = import_restuarant_menu(restuarant_id, m2, m1['name'])
+                        dish_id = import_restaurant_menu(restaurant_id, m2, m1['name'])
                         dishIds.append(dish_id)
     if len(dishIds) > 0:
-        restuarants.update({ "_id": restuarant_id }, { "$set": { "dishId": dishIds } })
+        restaurants.update({ "_id": restaurant_id }, { "$set": { "dishId": dishIds } })
     else:
-        logging.warn(restuarant_id)
+        logging.warn(restaurant_id)
 
 if __name__ == '__main__':
-    for restuarant in restuarants.find():
-        if 'extMerchantId' in restuarant:
-            restuarant_id = restuarant['_id']
-            marchant_id = restuarant['extMerchantId']
+    for restaurant in restaurants.find():
+        if 'extMerchantId' in restaurant:
+            restaurant_id = restaurant['_id']
+            marchant_id = restaurant['extMerchantId']
             r = send_request(URL_MERCHANT_MENU % (marchant_id, CLIENT_ID))
-            parse_restuarant_menu(restuarant_id, r.json())
+            parse_restaurant_menu(restaurant_id, r.json())
         else:
-            logging.error(restuarant)
+            logging.error(restaurant)

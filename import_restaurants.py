@@ -4,7 +4,7 @@ from pymongo import MongoClient
 logging.basicConfig(
     level=logging.WARN, 
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='import_restuarants.log', 
+    filename='import_restaurants.log', 
     filemode='w'
 )
 
@@ -13,12 +13,12 @@ URL_POINT = 'https://api.delivery.com/merchant/search/delivery?client_id=%s&lati
 URL_ADDRESS = 'https://api.delivery.com/merchant/search/delivery?client_id=%s&address=%s'
 URL_MERCHANT = 'https://api.delivery.com/merchant/%s?client_id=%s'
 
-mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
-db = mongoClient['consumer_db3']
-# mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468')
-# db = mongoClient['consumer_db']
+# mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
+# db = mongoClient['consumer_db3']
+mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
+db = mongoClient['consumer_db']
 
-restuarants = db.restuarants
+restaurants = db.restaurants
 
 def send_request(url):
     retries = 5
@@ -34,13 +34,13 @@ def send_request(url):
                 raise e
 
 
-def import_restuarant(marchant_id, data):
+def import_restaurant(marchant_id, data):
     if 'merchant' in data:
         merchant = data['merchant']
         merchant_id = merchant['id']
-        restuarant = restuarants.find_one({ 'extMerchantId': str(merchant_id) })
-        if restuarant:
-            restuarants.update({ '_id': restuarant['_id'] }, { '$set': {
+        restaurant = restaurants.find_one({ 'extMerchantId': str(merchant_id) })
+        if restaurant:
+            restaurants.update({ '_id': restaurant['_id'] }, { '$set': {
                 'name': merchant['summary']['name'],
                 'address': merchant['location']['street'],
                 'city': merchant['location']['city'],
@@ -65,7 +65,7 @@ def import_restuarant(marchant_id, data):
                 'url': merchant['summary']['url']['complete']
             }})
         else:
-            restuarants.insert_one({
+            restaurants.insert_one({
                 'dishId': [],
                 'name': merchant['summary']['name'],
                 'address': merchant['location']['street'],
@@ -106,7 +106,7 @@ def parse_marchant(marchants):
         if not marchant_id in marchant_ids:
             marchant_ids.append(marchant_id)
             r = send_request(URL_MERCHANT % (marchant_id, CLIENT_ID))
-            import_restuarant(marchant_id, r.json())
+            import_restaurant(marchant_id, r.json())
 
 if __name__ == '__main__':
     bk = xlrd.open_workbook('points.xlsx')
@@ -114,7 +114,6 @@ if __name__ == '__main__':
     sh = bk.sheet_by_index(0)
     nrows = sh.nrows
     ncols = sh.ncols
-    cell_value = sh.cell_value(1,1)
     for i in range(1,nrows):
         row_data = sh.row_values(i)
         r = send_request(URL_POINT % (CLIENT_ID, row_data[0], row_data[1]))
