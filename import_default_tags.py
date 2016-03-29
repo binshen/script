@@ -1,8 +1,8 @@
 import xlrd
 from pymongo import MongoClient
 
-mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
-db = mongoClient['consumer_db3']
+mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
+db = mongoClient['consumer_db']
 tags = db.tags
 
 if __name__ == '__main__':
