@@ -35,16 +35,24 @@ def send_request(url):
 
 def import_restaurant_menu(restaurant_id, data, category):
     dish = {
+        "partnerMenuId": data['id'],
+        "partnerSource": 'delivery',
         "category": [ category ],
         "name": data['name'],
         "price": data['price'],
+        "minQty": data['min_qty'],
+        "maxQty": data['max_qty'],
         "restaurantId": restaurant_id,
+        "customizeOptions": data['children'],
         "listAdded": [],
+        "listAddedCount": 0,
         "images": data['images'],
         "videos": [],
         "description": data['description'],
         "like": [],
-        "options": data['children']
+        "likeCount": 0,
+        'cpRating': {},
+        'userRating': {}
     }
     return dishes.insert_one(dish).inserted_id
 

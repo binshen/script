@@ -38,63 +38,101 @@ def import_restaurant(marchant_id, data):
     if 'merchant' in data:
         merchant = data['merchant']
         merchant_id = merchant['id']
-        restaurant = restaurants.find_one({ 'extMerchantId': str(merchant_id) })
+        restaurant = restaurants.find_one({ 'partnerRestId': str(merchant_id) })
         if restaurant:
             restaurants.update({ '_id': restaurant['_id'] }, { '$set': {
+                'partnerUrl': merchant['summary']['url']['complete'],
+                'partnerSource': 'delivery',
+                'cuisines': merchant['summary']['cuisines'],
                 'name': merchant['summary']['name'],
                 'address': merchant['location']['street'],
                 'city': merchant['location']['city'],
                 'state': merchant['location']['state'],
+                'zip': merchant['location']['zip'],
+                'activationDate': merchant['summary']['activation_date'],
                 'loc': {
-                    "type" : "Point",
-                    "coordinates" : [ 
+                    "type": "Point",
+                    "coordinates": [ 
                         merchant['location']['longitude'], 
                         merchant['location']['latitude']
                     ]
                 },
                 'latitude': merchant['location']['latitude'],
                 'longitude': merchant['location']['longitude'],
-                'logo': merchant['summary']['merchant_logo'],
+                'contactInfo': {
+                    'email' :[],
+                    'phone': [merchant['summary']['phone']]
+                },
+                'logo': {
+                    'thumbSize': None,
+                    'midSize': merchant['summary']['merchant_logo'],
+                    'rawSize': merchant['summary']['merchant_logo_raw']
+                },
                 'description': merchant['summary']['description'],
+                'note': merchant['summary']['notes'],
                 'priceRange': merchant['summary']['price_rating'],
                 'images': data['images'] if 'images' in data else [],
-                'zip': merchant['location']['zip'],
-                'phone': merchant['summary']['phone'],
                 'starRating': merchant['summary']['star_ratings'],
-                'cuisines': merchant['summary']['cuisines'],
-                'url': merchant['summary']['url']['complete']
+                'pickUp': merchant['ordering']['availability']['pickup_supported'],
+                'delivery': merchant['ordering']['availability']['delivery_supported'],
+                'minimumForDelievery': merchant['ordering']['availability']['minimum']['delivery']['lowest'],
+                'startPickUpTime': merchant['ordering']['availability']['next_pickup_time'],
+                'startDeliveryTime': merchant['ordering']['availability']['next_delivery_time'],
+                'lastPickUpTime': merchant['ordering']['availability']['last_pickup_time'],
+                'lastDeliveryTime': merchant['ordering']['availability']['last_delivery_time'],
+                'pickUpEstimate': merchant['ordering']['availability']['pickup_estimate'],
+                'deliveryEstimate': merchant['ordering']['availability']['delivery_estimate']
             }})
         else:
             restaurants.insert_one({
+                'partnerRestId': merchant['id'],
+                'partnerUrl': merchant['summary']['url']['complete'],
+                'partnerSource': 'delivery',
+                'cuisines': merchant['summary']['cuisines'],
                 'dishId': [],
                 'name': merchant['summary']['name'],
                 'address': merchant['location']['street'],
                 'city': merchant['location']['city'],
                 'state': merchant['location']['state'],
+                'zip': merchant['location']['zip'],
+                'activationDate': merchant['summary']['activation_date'],
                 'loc': {
-                    "type" : "Point",
-                    "coordinates" : [ 
+                    "type": "Point",
+                    "coordinates": [ 
                         merchant['location']['longitude'], 
                         merchant['location']['latitude']
                     ]
                 },
                 'latitude': merchant['location']['latitude'],
                 'longitude': merchant['location']['longitude'],
-                'contactInfo': [],
-                'logo': merchant['summary']['merchant_logo'],
+                'contactInfo': {
+                    'email' :[],
+                    'phone': [merchant['summary']['phone']]
+                },
+                'logo': {
+                    'thumbSize': None,
+                    'midSize': merchant['summary']['merchant_logo'],
+                    'rawSize': merchant['summary']['merchant_logo_raw']
+                },
                 'description': merchant['summary']['description'],
+                'note': merchant['summary']['notes'],
                 'priceRange': merchant['summary']['price_rating'],
                 'images': data['images'] if 'images' in data else [],
                 'videos': [],
                 'like': [],
+                'likeCount': 0,
+                'starRating': merchant['summary']['star_ratings'],
                 'cpRating': {},
                 'userRating': {},
-                'extMerchantId': merchant['id'],
-                'zip': merchant['location']['zip'],
-                'phone': merchant['summary']['phone'],
-                'starRating': merchant['summary']['star_ratings'],
-                'cuisines': merchant['summary']['cuisines'],
-                'url': merchant['summary']['url']['complete']
+                'pickUp': merchant['ordering']['availability']['pickup_supported'],
+                'delivery': merchant['ordering']['availability']['delivery_supported'],
+                'minimumForDelievery': merchant['ordering']['availability']['minimum']['delivery']['lowest'],
+                'startPickUpTime': merchant['ordering']['availability']['next_pickup_time'],
+                'startDeliveryTime': merchant['ordering']['availability']['next_delivery_time'],
+                'lastPickUpTime': merchant['ordering']['availability']['last_pickup_time'],
+                'lastDeliveryTime': merchant['ordering']['availability']['last_delivery_time'],
+                'pickUpEstimate': merchant['ordering']['availability']['pickup_estimate'],
+                'deliveryEstimate': merchant['ordering']['availability']['delivery_estimate']
             })
     else:
         logging.warn('----------id:' + marchant_id + ' data:' + json.dumps(data))
