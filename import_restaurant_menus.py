@@ -74,9 +74,9 @@ def parse_restaurant_menu(restaurant_id, data):
 
 if __name__ == '__main__':
     for restaurant in restaurants.find():
-        if 'extMerchantId' in restaurant:
+        if 'partnerRestId' in restaurant:
             restaurant_id = restaurant['_id']
-            marchant_id = restaurant['extMerchantId']
+            marchant_id = restaurant['partnerRestId']
             r = send_request(URL_MERCHANT_MENU % (marchant_id, CLIENT_ID))
             parse_restaurant_menu(restaurant_id, r.json())
         else:
