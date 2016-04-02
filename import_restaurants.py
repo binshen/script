@@ -129,7 +129,6 @@ def import_restaurant(marchant_id, data):
                 'images': data['images'] if 'images' in data else [],
                 'videos': [],
                 'like': [],
-                'likeCount': 0,
                 'starRating': merchant['summary']['star_ratings'],
                 'cpRating': {},
                 'userRating': {},
