@@ -35,7 +35,7 @@ def send_request(url):
 
 def import_restaurant_menu(restaurant_id, data, category):
     dish = {
-        'partnerRestId': {
+        'partnerMenuId': {
             'delivery': {
                 '_id': data['id']
             },
