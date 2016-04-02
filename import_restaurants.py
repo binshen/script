@@ -38,11 +38,9 @@ def import_restaurant(marchant_id, data):
     if 'merchant' in data:
         merchant = data['merchant']
         merchant_id = merchant['id']
-        restaurant = restaurants.find_one({ 'partnerRestId': str(merchant_id) })
+        restaurant = restaurants.find_one({ 'partnerRestId.delivery._id': str(merchant_id) })
         if restaurant:
             restaurants.update({ '_id': restaurant['_id'] }, { '$set': {
-                'partnerUrl': merchant['summary']['url']['complete'],
-                'partnerSource': 'delivery',
                 'cuisines': merchant['summary']['cuisines'],
                 'name': merchant['summary']['name'],
                 'address': merchant['location']['street'],
@@ -85,9 +83,20 @@ def import_restaurant(marchant_id, data):
             }})
         else:
             restaurants.insert_one({
-                'partnerRestId': merchant['id'],
-                'partnerUrl': merchant['summary']['url']['complete'],
-                'partnerSource': 'delivery',
+                'partnerRestId': {
+                    'delivery': {
+                        '_id': merchant['id'],
+                        'url': merchant['summary']['url']['complete']
+                    },
+                    'seamless': {
+                        '_id': None,
+                        'url': None
+                    },
+                    'grubhub': {
+                        '_id': None,
+                        'url': None
+                    }
+                },
                 'cuisines': merchant['summary']['cuisines'],
                 'dishId': [],
                 'name': merchant['summary']['name'],

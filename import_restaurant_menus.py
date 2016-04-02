@@ -35,8 +35,17 @@ def send_request(url):
 
 def import_restaurant_menu(restaurant_id, data, category):
     dish = {
-        "partnerMenuId": data['id'],
-        "partnerSource": 'delivery',
+        'partnerRestId': {
+            'delivery': {
+                '_id': data['id']
+            },
+            'seamless': {
+                '_id': None
+            },
+            'grubhub': {
+                '_id': None
+            }
+        },
         "category": [ category ],
         "name": data['name'],
         "price": data['price'],
@@ -74,9 +83,9 @@ def parse_restaurant_menu(restaurant_id, data):
 
 if __name__ == '__main__':
     for restaurant in restaurants.find():
-        if 'partnerRestId' in restaurant:
+        if 'partnerRestId' in restaurant and 'delivery' in restaurant['partnerRestId']:
             restaurant_id = restaurant['_id']
-            marchant_id = restaurant['partnerRestId']
+            marchant_id = restaurant['partnerRestId']['delivery']['_id']
             r = send_request(URL_MERCHANT_MENU % (marchant_id, CLIENT_ID))
             parse_restaurant_menu(restaurant_id, r.json())
         else:
