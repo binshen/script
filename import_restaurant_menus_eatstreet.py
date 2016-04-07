@@ -10,8 +10,8 @@ logging.basicConfig(
 
 URL_MERCHANT_MENU = 'https://api.eatstreet.com/publicapi/v1/restaurant/%s/menu?includeCustomizations=true'
 
-mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
-db = mongoClient['consumer_db']
+mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
+db = mongoClient['consumer_db3']
 
 restaurants = db.restaurants
 dishes = db.dishes
@@ -29,7 +29,7 @@ def send_request(url):
                 logging.error('----error:' + url)
                 raise e
 
-def import_restaurant_menu(restaurant_id, data, category, description):
+def import_restaurant_menu(restaurant_id, data, category):
     dish = {
         'partnerMenuId': {
             'delivery': {
@@ -56,7 +56,7 @@ def import_restaurant_menu(restaurant_id, data, category, description):
         "listAddedCount": 0,
         "images": [],
         "videos": [],
-        "description": description,
+        "description": data['description'] if 'description' in data else None,
         "like": [],
         "likeCount": 0,
         'cpRating': {},
@@ -69,7 +69,7 @@ def parse_restaurant_menu(restaurant_id, data):
     dishIds = []
     for m1 in data:
         for m2 in m1['items']:
-            dish_id = import_restaurant_menu(restaurant_id, m2, m1['name'], m1['description'])
+            dish_id = import_restaurant_menu(restaurant_id, m2, m1['name'])
             dishIds.append(dish_id)
     if len(dishIds) > 0:
         restaurants.update({ "_id": restaurant_id }, { "$set": { "dishId": dishIds } })

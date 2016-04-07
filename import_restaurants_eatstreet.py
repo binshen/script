@@ -10,8 +10,8 @@ logging.basicConfig(
 
 URL_POINT = 'https://api.eatstreet.com/publicapi/v1/restaurant/search?latitude=%s&longitude=%s&method=both'
 
-mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
-db = mongoClient['consumer_db']
+mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
+db = mongoClient['consumer_db3']
 
 restaurants = db.restaurants
 
@@ -106,10 +106,13 @@ def import_restaurant(data):
             'deliveryEstimate': None
         })
 
-
+marchant_ids = []
 def parse_restaurant(restaurants):
     for restaurant in restaurants:
-        import_restaurant(restaurant)
+        marchant_id = restaurant['apiKey']
+        if not marchant_id in marchant_ids:
+            marchant_ids.append(marchant_id)
+            import_restaurant(restaurant)
 
 if __name__ == '__main__':
     bk = xlrd.open_workbook('points.xlsx')
