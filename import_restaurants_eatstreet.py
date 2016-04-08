@@ -1,4 +1,4 @@
-import xlrd, requests, json, logging
+import xlrd, requests, re, logging
 from pymongo import MongoClient
 
 logging.basicConfig(
@@ -30,7 +30,12 @@ def send_request(url):
 
 def import_restaurant(data):
     
-    restaurant = restaurants.find_one({ 'name': '/'+data['name']+'/i', 'address': '/'+data['streetAddress']+'/i', 'state': '/'+data['state']+'/i', 'city': '/'+data['city']+'/i' })
+    restaurant = restaurants.find_one({ 
+        'name': re.compile(data['name'], re.IGNORECASE), 
+        'address': re.compile(data['streetAddress'], re.IGNORECASE), 
+        'state': re.compile(data['state'], re.IGNORECASE), 
+        'city': re.compile(data['city'], re.IGNORECASE) 
+    })
     if restaurant:
         partnerRestId = restaurant['partnerRestId']
         partnerRestId['eatstreet'] = {
