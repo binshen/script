@@ -15,8 +15,8 @@ URL_MERCHANT = 'https://api.delivery.com/merchant/%s?client_id=%s'
 
 # mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
 # db = mongoClient['consumer_db3']
-mongoClient = MongoClient('mongodb://ksjs_user:passw0rd@ds019468.mlab.com:19468/consumer_db')
-db = mongoClient['consumer_db']
+mongoClient = MongoClient('mongodb://b2cDevAdmin:devAdmin123@ds019860-a0.mlab.com:19860,ds019860-a1.mlab.com:19860/oh-b2c-mongo-dev2?replicaSet=rs-ds019860')
+db = mongoClient['oh-b2c-mongo-dev2']
 
 restaurants = db.restaurants
 
