@@ -1,4 +1,4 @@
-import requests, logging
+import requests, logging, config
 from pymongo import MongoClient
 
 logging.basicConfig(
@@ -11,10 +11,8 @@ logging.basicConfig(
 CLIENT_ID = 'YzIwMWRhMDI1NDAxNDBlNTUxYjdkNmEyOTYxNGVhNTBm'
 URL_MERCHANT_MENU = 'https://api.delivery.com/merchant/%s/menu?client_id=%s'
 
-# mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
-# db = mongoClient['consumer_db3']
-mongoClient = MongoClient('mongodb://b2cDevAdmin:devAdmin123@ds019860-a0.mlab.com:19860,ds019860-a1.mlab.com:19860/oh-b2c-mongo-dev2?replicaSet=rs-ds019860')
-db = mongoClient['oh-b2c-mongo-dev2']
+mongoClient = MongoClient(config.mongoDbUrl)
+db = mongoClient[config.mongoDbName]
 
 restaurants = db.restaurants
 dishes = db.dishes

@@ -1,4 +1,4 @@
-import xlrd, requests, json, logging
+import xlrd, requests, json, logging, config
 from pymongo import MongoClient
 
 logging.basicConfig(
@@ -13,10 +13,8 @@ URL_POINT = 'https://api.delivery.com/merchant/search/delivery?client_id=%s&lati
 URL_ADDRESS = 'https://api.delivery.com/merchant/search/delivery?client_id=%s&address=%s'
 URL_MERCHANT = 'https://api.delivery.com/merchant/%s?client_id=%s'
 
-# mongoClient = MongoClient('mongodb://121.41.114.83:27017/')
-# db = mongoClient['consumer_db3']
-mongoClient = MongoClient('mongodb://b2cDevAdmin:devAdmin123@ds019860-a0.mlab.com:19860,ds019860-a1.mlab.com:19860/oh-b2c-mongo-dev2?replicaSet=rs-ds019860')
-db = mongoClient['oh-b2c-mongo-dev2']
+mongoClient = MongoClient(config.mongoDbUrl)
+db = mongoClient[config.mongoDbName]
 
 restaurants = db.restaurants
 
