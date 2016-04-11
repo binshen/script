@@ -31,6 +31,30 @@ def send_request(url):
                 raise e
         break
 
+def fetch_menu_options(data):
+    results = []
+    if data:
+        for option in data:
+            if option.get('type', None) in ['price group', 'option group']:
+                r = {}
+                r['name'] = option.get('name')
+                r['desc'] = option.get('description')
+                r['min_selection'] = option.get('min_selection')
+                r['max_selection'] = option.get('max_selection')
+                options = []
+                children = option.get('children')
+                if children:
+                    for child in children:
+                        o = {}
+                        o['name'] = child.get('name')
+                        o['desc'] = child.get('description')
+                        o['price'] = child.get('price')
+                        o['max_price'] = child.get('max_price')
+                        options.append(o)  
+                r['options'] = options
+                results.append(r)
+    return results
+
 def import_restaurant_menu(restaurant_id, data, category):
     dish = {
         'partnerMenuId': {
@@ -50,7 +74,7 @@ def import_restaurant_menu(restaurant_id, data, category):
         "minQty": data['min_qty'],
         "maxQty": data['max_qty'],
         "restaurantId": restaurant_id,
-        "customizeOptions": data['children'],
+        "customizeOptions": fetch_menu_options(data['children']),
         "listAdded": [],
         "listAddedCount": 0,
         "images": data['images'],

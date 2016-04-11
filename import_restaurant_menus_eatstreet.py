@@ -29,6 +29,32 @@ def send_request(url):
                 logging.error('----error:' + url)
                 raise e
 
+def fetch_menu_options(data):
+    results = []
+    if data:
+        for option in data:
+            r = {}
+            r['name'] = option.get('name')
+            r['desc'] = None
+            r['min_selection'] = None
+            r['max_selection'] = None
+            options = []
+            customizations = option.get('customizations')
+            if customizations:
+                for customization in customizations:
+                    customizationChoices = customization.get('customizationChoices')
+                    if customizationChoices:
+                        for customizationChoice in customizationChoices:
+                            o = {}
+                            o['name'] = customizationChoice.get('name')
+                            o['desc'] = None
+                            o['price'] = customizationChoice.get('price')
+                            o['max_price'] = None
+                            options.append(o)
+            r['options'] = options
+            results.append(r)
+    return results
+
 def import_restaurant_menu(restaurant_id, data, category):
     dish = {
         'partnerMenuId': {
@@ -51,7 +77,7 @@ def import_restaurant_menu(restaurant_id, data, category):
         "minQty": None,
         "maxQty": None,
         "restaurantId": restaurant_id,
-        "customizeOptions": data['customizationGroups'],
+        "customizeOptions": fetch_menu_options(data['customizationGroups']),
         "listAdded": [],
         "listAddedCount": 0,
         "images": [],
