@@ -4,7 +4,7 @@ from pymongo import MongoClient
 logging.basicConfig(
     level=logging.WARN, 
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='import_restaurant_menus.log', 
+    filename='import_restaurant_menus_eatstreet.log', 
     filemode='w'
 )
 
