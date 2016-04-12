@@ -93,6 +93,10 @@ def import_restaurant(marchant_id, data):
                     'grubhub': {
                         '_id': None,
                         'url': None
+                    },
+                    'eatstreet': {
+                        '_id': None,
+                        'url': None
                     }
                 },
                 'cuisines': merchant['summary']['cuisines'],
