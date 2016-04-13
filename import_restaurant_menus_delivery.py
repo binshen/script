@@ -37,6 +37,8 @@ def fetch_menu_options(data):
         for option in data:
             if option.get('type', None) in ['price group', 'option group']:
                 r = {}
+                r['id'] = option.get('id')
+                r['type'] = option.get('type')
                 r['name'] = option.get('name')
                 r['desc'] = option.get('description')
                 r['min_selection'] = option.get('min_selection')
@@ -46,6 +48,8 @@ def fetch_menu_options(data):
                 if children:
                     for child in children:
                         o = {}
+                        o['id'] = child.get('id')
+                        o['type'] = child.get('type')
                         o['name'] = child.get('name')
                         o['desc'] = child.get('description')
                         o['price'] = child.get('price')
@@ -65,6 +69,9 @@ def import_restaurant_menu(restaurant_id, data, category):
                 '_id': None
             },
             'grubhub': {
+                '_id': None
+            },
+            'eatstreet': {
                 '_id': None
             }
         },
